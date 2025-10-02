@@ -22,7 +22,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="">
+  <section class="!h-[100vh]">
     <div class="">
       <h1 class="font-bold text-xl capitalize">
         Welcome Back, {{ user.firstName }}
@@ -101,11 +101,43 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="my-10 grid grid-cols-2 gap-5">
-      <div class="rounded-2xl bg-white flex flex-col gap-5">
-        <h2 class="font-semibold text-lg">Upcoming Deadlines</h2>
-        <div v-loading="upcoming.loading" class="flex flex-col gap-3">
-          <template v-if="upcoming?.items?.length !== 0">
+    <el-scrollbar class="!h-[57vh] overflow-auto">
+      <div class="my-10 grid grid-cols-2 gap-5">
+        <div class="rounded-2xl bg-white flex flex-col gap-5">
+          <h2 class="font-semibold text-lg">Upcoming Deadlines</h2>
+          <div v-loading="upcoming.loading" class="flex flex-col gap-3">
+            <template v-if="upcoming?.items?.length !== 0">
+              <div v-for="(task, key) in upcoming.items" :key
+                class="rounded-xl border border-gray-50 flex gap-2 items-start justify-between p-5">
+                <div class="flex gap-3 items-start">
+                  <el-icon size="24" color="#69131B">
+                    <Calendar />
+                  </el-icon>
+                  <div class="flex flex-col">
+                    <div>
+                      <h3 class="font-[500] text-lg line-clamp-1">{{ task?.title }}</h3>
+                      <p class="line-clamp-1 opacity-70">{{ task?.sprint?.project?.title }}</p>
+                    </div>
+                    <p class="text-xs opacity-70">Due: {{ format(task?.dueDate, "do MMM, yyy") }}</p>
+                  </div>
+                </div>
+                <router-link
+                  :to="{ name: 'view-sprint-task', params: { id: task.sprint.project.id, sprintId: task?.sid, taskId: task?.id } }">
+                  <el-button type="primary" text>
+                    View Details
+                  </el-button>
+                </router-link>
+              </div>
+            </template>
+            <div v-else class="opacity-50 text-sm">
+              All done, nothing here.
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl bg-white flex flex-col gap-5">
+          <h2 class="font-semibold text-lg">Recent Activities</h2>
+          <div v-loading="upcoming.loading" class="flex flex-col gap-3">
             <div v-for="(task, key) in upcoming.items" :key
               class="rounded-xl border border-gray-50 flex gap-2 items-start justify-between p-5">
               <div class="flex gap-3 items-start">
@@ -114,96 +146,66 @@ onMounted(async () => {
                 </el-icon>
                 <div class="flex flex-col">
                   <div>
-                    <h3 class="font-[500] text-lg line-clamp-1">{{ task?.title }}</h3>
-                    <p class="line-clamp-1 opacity-70">{{ task?.sprint?.project?.title }}</p>
+                    <h3 class="font-[500] text-lg line-clamp-1">{{ task.title }}</h3>
+                    <p class="line-clamp-1 opacity-70">{{ task.sprint.project.title }}</p>
                   </div>
-                  <p class="text-xs opacity-70">Due: {{ format(task?.dueDate, "do MMM, yyy") }}</p>
+                  <p class="text-xs opacity-70">Due: {{ format(task.dueDate, "do MMM, yyy") }}</p>
                 </div>
               </div>
+              <el-button type="primary" text>
+                View Details
+              </el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-5">
+        <h2 class="font-semibold text-lg">Your Tasks</h2>
+        <el-table v-loading="tasks.loading" style="width: 100%;" stripe :data="tasks.items">
+          <el-table-column prop="createdAt" label="Date Added" width="150">
+            <template #default="{ row }">
+              {{ format(row.createdAt, 'do MMM, yyy') }}
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="title" label="Title" width="150">
+            <template #default="{ row }">
               <router-link
-                :to="{ name: 'view-sprint-task', params: { id: task.sprint.project.id, sprintId: task?.sid, taskId: task?.id } }">
-                <el-button type="primary" text>
-                  View Details
-                </el-button>
+                :to="{ name: 'view-sprint-task', params: { taskId: row.id, sprintId: row.sid, id: row.sprint.pid } }"
+                class="text-blue-500 underline">
+                {{ row.title }}
               </router-link>
-            </div>
-          </template>
-          <div v-else class="opacity-50 text-sm">
-            All done, nothing here.
-          </div>
-        </div>
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="description" label="Description" width="350" show-overflow-tooltip>
+            <template #default="{ row }">
+              {{ row.description }}
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="startDate" label="Start Date" width="150">
+            <template #default="{ row }">
+              {{ format(row.startDate, 'do MMM, yyy') }}
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="dueDate" label="Due Date" width="150">
+            <template #default="{ row }">
+              {{ format(row.dueDate, 'do MMM, yyy') }}
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="status" label="Status">
+            <template #default="{ row }">
+              <el-tag class="capitalize">
+                {{ row.status.replace("_", " ").toLowerCase() }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
-
-      <div class="rounded-2xl bg-white flex flex-col gap-5">
-        <h2 class="font-semibold text-lg">Recent Activities</h2>
-        <div v-loading="upcoming.loading" class="flex flex-col gap-3">
-          <div v-for="(task, key) in upcoming.items" :key
-            class="rounded-xl border border-gray-50 flex gap-2 items-start justify-between p-5">
-            <div class="flex gap-3 items-start">
-              <el-icon size="24" color="#69131B">
-                <Calendar />
-              </el-icon>
-              <div class="flex flex-col">
-                <div>
-                  <h3 class="font-[500] text-lg line-clamp-1">{{ task.title }}</h3>
-                  <p class="line-clamp-1 opacity-70">{{ task.sprint.project.title }}</p>
-                </div>
-                <p class="text-xs opacity-70">Due: {{ format(task.dueDate, "do MMM, yyy") }}</p>
-              </div>
-            </div>
-            <el-button type="primary" text>
-              View Details
-            </el-button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-5">
-      <h2 class="font-semibold text-lg">Your Tasks</h2>
-      <el-table v-loading="tasks.loading" style="width: 100%;" height="500" stripe :data="tasks.items">
-        <el-table-column prop="createdAt" label="Date Added" width="150">
-          <template #default="{ row }">
-            {{ format(row.createdAt, 'do MMM, yyy') }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="title" label="Title" width="150">
-          <template #default="{ row }">
-            <router-link
-              :to="{ name: 'view-sprint-task', params: { taskId: row.id, sprintId: row.sid, id: row.sprint.pid } }"
-              class="text-blue-500 underline">
-              {{ row.title }}
-            </router-link>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="description" label="Description" width="350" show-overflow-tooltip>
-          <template #default="{ row }">
-            {{ row.description }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="startDate" label="Start Date" width="150">
-          <template #default="{ row }">
-            {{ format(row.startDate, 'do MMM, yyy') }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="dueDate" label="Due Date" width="150">
-          <template #default="{ row }">
-            {{ format(row.dueDate, 'do MMM, yyy') }}
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="status" label="Status">
-          <template #default="{ row }">
-            <el-tag class="capitalize">
-              {{ row.status.replace("_", " ").toLowerCase() }}
-            </el-tag>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+    </el-scrollbar>
   </section>
 </template>
