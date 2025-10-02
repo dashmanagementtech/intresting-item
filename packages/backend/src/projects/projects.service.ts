@@ -382,11 +382,19 @@ export class ProjectsService {
               },
             },
           },
+          where: {
+            NOT: {
+              status: 'DONE',
+            },
+          },
         });
       } else {
         tasks = await prisma.tasks.findMany({
           where: {
             uid: user.id,
+            NOT: {
+              status: 'DONE',
+            },
           },
           include: {
             sprint: {
