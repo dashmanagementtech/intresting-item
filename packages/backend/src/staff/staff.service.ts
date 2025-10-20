@@ -9,8 +9,9 @@ import { UpdateStaffDto } from './dto/update-staff.dto';
 import { prisma } from 'config/prisma';
 import * as bcrypt from 'bcryptjs';
 
-import { bcryptSalt, isEmailTaken, findUserById } from 'utils/helpers';
+import { bcryptSalt, isEmailTaken, findUserById, sendEmail } from 'utils/helpers';
 import { PaginationDto, SearchDto } from 'utils/pagination.dto';
+import welcomeEmailBuilder from 'utils/email';
 
 @Injectable()
 export class StaffService {
@@ -27,6 +28,15 @@ export class StaffService {
 
       await prisma.users.create({
         data: payload,
+      });
+
+      await sendEmail({
+        subject: 'Welcome to Monitora',
+        to: [{ name: `${data.firstName} ${data.lastName}`, email: data.email }],
+        html: welcomeEmailBuilder({
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+        }),
       });
 
       return { message: 'user invite sent' };
