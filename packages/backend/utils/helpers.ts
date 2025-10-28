@@ -134,3 +134,16 @@ export async function sendEmail({
     throw error;
   }
 }
+
+export function dateDiff({
+  startDate,
+  endDate,
+}: {
+  startDate: string;
+  endDate: string;
+}): number {
+  const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+}

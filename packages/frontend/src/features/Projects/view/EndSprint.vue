@@ -6,8 +6,8 @@ import { useRoute, useRouter } from 'vue-router';
 import Modal from '@/shared/components/Modal.vue';
 
 import { useDate } from '@/shared/composables/useDate'
-import { useSprint } from '../composable/useSprints';
 import { validateRequiredField } from '@/shared/utils/helpers';
+import { useSprint } from '../composable/useSprints';
 
 const route = useRoute()
 const router = useRouter()
@@ -34,6 +34,8 @@ const rules = reactive<FormRules<typeof form>>({
     validator: (value: any, rule: any, callback: any) => {
       if (form.value.tasks.length !== 0) {
         validateRequiredField(form.value, 'sid', callback)
+      } else {
+        return true
       }
     }, trigger: 'change'
   }]
