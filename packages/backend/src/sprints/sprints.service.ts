@@ -6,7 +6,13 @@ import {
 } from './dto/create-sprint.dto';
 import { UpdateSprintDto } from './dto/update-sprint.dto';
 import { prisma } from 'config/prisma';
-import { getUserFromRequest } from 'utils/helpers';
+import { dateDiff, getUserFromRequest, sendEmail } from 'utils/helpers';
+import {
+  sprintEndedEmailBuilder,
+  sprintStartedEmailBuilder,
+  taskTableBuilderForEmail,
+} from 'utils/email';
+import { groupBy } from 'lodash';
 
 @Injectable()
 export class SprintsService {
@@ -266,12 +272,62 @@ export class SprintsService {
         });
       }
 
-      await prisma.sprints.update({
+      const tasks = await prisma.sprints.update({
         where: {
           id: sid,
         },
         data: { started: true },
+        include: {
+          tasks: {
+            include: {
+              assignedTo: {
+                select: {
+                  email: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+        },
       });
+
+      await Promise.all(
+        tasks.tasks.map((task) => {
+          return sendEmail({
+            subject: 'New Sprint started',
+            html: sprintStartedEmailBuilder({
+              email: task.assignedTo.email,
+              name: `${task.assignedTo.firstName} ${task.assignedTo.lastName}`,
+              sprint: {
+                title: tasks.title,
+                goals: tasks.goals,
+                duration: `${dateDiff({
+                  startDate: tasks.startDate.toDateString(),
+                  endDate: tasks.endDate.toDateString(),
+                })} Days`,
+                tasks: tasks.tasks.length,
+                due: tasks.endDate.toDateString(),
+              },
+              tasks: tasks.tasks
+                .filter((_task) => _task.assignedTo === task.assignedTo)
+                .map((_task) =>
+                  taskTableBuilderForEmail({
+                    title: _task.title,
+                    due: _task.dueDate.toDateString(),
+                  }),
+                )
+                .join(''),
+            }),
+            to: [
+              {
+                email: task.assignedTo.email,
+                name: `${task.assignedTo.firstName} ${task.assignedTo.lastName}`,
+              },
+            ],
+          });
+        }),
+      );
 
       return { message: 'sprint started', pid: pid?.pid };
     } catch (error) {
@@ -282,14 +338,78 @@ export class SprintsService {
 
   async endSprint(sid: string, payload: EndSprintDto) {
     try {
-      const pid = await prisma.sprints.update({
-        where: { id: sid },
-        data: {
-          started: false,
-          note: payload.note,
-        },
-        select: { pid: true },
-      });
+      const [pid, tasks] = await Promise.all([
+        prisma.sprints.update({
+          where: { id: sid },
+          data: {
+            started: false,
+            note: payload.note,
+          },
+          select: {
+            pid: true,
+            title: true,
+            goals: true,
+            endDate: true,
+            startDate: true,
+          },
+        }),
+        prisma.tasks.findMany({
+          where: {
+            sid,
+          },
+          include: {
+            assignedTo: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+      // Filter based on assignedTo
+      const userTasks = groupBy(tasks, 'uid');
+
+      await Promise.all(
+        Object.keys(userTasks).map((userId) => {
+          const user = userTasks[userId][0].assignedTo;
+          return sendEmail({
+            subject: 'Sprint Ended',
+            to: [
+              {
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+              },
+            ],
+            html: sprintEndedEmailBuilder({
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              sprint: {
+                title: pid.title,
+                goals: pid.goals,
+                duration: `${dateDiff({
+                  startDate: pid.startDate.toDateString(),
+                  endDate: pid.endDate.toDateString(),
+                })} Days`,
+                dueDate: pid.endDate.toDateString(),
+              },
+              task: {
+                total: userTasks[userId].length,
+                completed: userTasks[userId].filter(
+                  (task) => task.status === 'DONE',
+                ).length,
+                complete_rate:
+                  (userTasks[userId].filter((task) => task.status === 'DONE')
+                    .length /
+                    userTasks[userId].length) *
+                  100,
+              },
+            }),
+          });
+        }),
+      );
 
       if (payload.tasks.length !== 0) {
         await prisma.tasks.updateMany({
@@ -306,6 +426,7 @@ export class SprintsService {
 
       return { message: 'Sprint ended', pid: pid.pid };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }

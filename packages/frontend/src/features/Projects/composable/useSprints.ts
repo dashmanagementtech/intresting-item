@@ -14,7 +14,7 @@ const meta = reactive({})
 
 export function useSprint() {
   const fetchAllSprintsByProjectId = async (pid: string, silent = false) => {
-    if (silent) {
+    if (!silent) {
       loading.value = true
     }
 

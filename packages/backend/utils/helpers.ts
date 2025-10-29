@@ -5,6 +5,7 @@ import { prisma } from 'config/prisma';
 import { isEmpty } from 'lodash';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { SendSmtpEmail, TransactionalEmailsApi } from '@getbrevo/brevo';
 
 export function validateEmail(email: string) {
   try {
@@ -100,4 +101,49 @@ export async function getUserFromRequest(req: any) {
   } catch (error: any) {
     throw Error(error);
   }
+}
+
+export async function sendEmail({
+  subject,
+  html,
+  to,
+}: {
+  subject: string;
+  html: string;
+  to: { email: string; name: string }[];
+}) {
+  const emailApi = new TransactionalEmailsApi();
+  (emailApi as any).authentications.apiKey.apiKey = process.env.BREVO_KEY;
+
+  try {
+    const message = new SendSmtpEmail();
+    message.subject = subject;
+    message.to = to;
+    message.htmlContent = html;
+    message.sender = {
+      name: 'Damilola from Monitora',
+      email: 'dashprojectsmanagement@gmail.com',
+    };
+
+    const resp = await emailApi.sendTransacEmail(message);
+
+    const res = JSON.stringify(resp.body);
+    console.log(res);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export function dateDiff({
+  startDate,
+  endDate,
+}: {
+  startDate: string;
+  endDate: string;
+}): number {
+  const diffMs = new Date(endDate).getTime() - new Date(startDate).getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return diffDays;
 }

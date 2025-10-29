@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ArrowDown, ArrowUp, CircleClose, Edit, Setting, VideoPlay } from '@element-plus/icons-vue'
+import { ArrowDown, ArrowUp, CircleClose, Edit, Loading, Setting, VideoPlay } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 import { useDate } from '@/shared/composables/useDate'
 import { TAG_TYPES } from '@/shared/utils/constants'
-import { useSprint } from '../composable/useSprints';
+import { useSprint } from '../composable/useSprints'
 
 const { sprint } = defineProps<{ sprint: Record<string, any> }>()
 
@@ -14,19 +14,22 @@ const { format } = useDate()
 const { startSprintById } = useSprint()
 
 const isOpened = ref(false)
+const loading = ref(false)
 
 async function handleCommand(action: 'start' | 'stop' | 'edit') {
   switch (action) {
     case 'stop':
       router.push({ name: 'end-sprint', params: { sprintId: sprint.id, id: sprint.pid } })
-      break;
+      break
 
     case 'start':
+      loading.value = true
       await startSprintById(sprint.id)
-      break;
+      loading.value = false
+      break
 
     default:
-      break;
+      break
   }
 }
 </script>
@@ -41,7 +44,9 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
               <h3 class="text-lg font-semibold text-primary">
                 {{ sprint.title }}
               </h3>
-              <el-tag size="small" v-if="sprint.started">CURRENT</el-tag>
+              <el-tag v-if="sprint.started" size="small">
+                CURRENT
+              </el-tag>
             </div>
             <p class="text-sm text-gray-300">
               {{ format(sprint.startDate, 'do MMM, yyy') }} -
@@ -52,9 +57,10 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
       </div>
 
       <div class="flex gap-5 items-center">
-        <el-dropdown @command="handleCommand">
+        <el-dropdown :disabled="loading" @command="handleCommand">
           <el-icon class="cursor-pointer" :size="20">
-            <Setting />
+            <Loading v-if="loading" class="animate-spin" />
+            <Setting v-else />
           </el-icon>
           <template #dropdown>
             <el-dropdown-menu>
@@ -99,14 +105,18 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
     <div v-if="isOpened" class="mt-3">
       <div v-if="sprint.tasks.length === 0" class="text-gray-300">
         No tasks scheduled for this sprint, yet.
-        <router-link class="text-gray-500 underline"
-          :to="{ name: 'add-task-to-sprint', params: { sprintId: sprint.id } }">
+        <router-link
+          class="text-gray-500 underline"
+          :to="{ name: 'add-task-to-sprint', params: { sprintId: sprint.id } }"
+        >
           Add task to sprint
         </router-link>
       </div>
       <div v-else class="grid gap-3">
-        <div class="border border-gray-50 rounded-xl p-5 flex justify-between items-center"
-          v-for="(task, key) in sprint.tasks" :key>
+        <div
+          v-for="(task, key) in sprint.tasks"
+          :key class="border border-gray-50 rounded-xl p-5 flex justify-between items-center"
+        >
           <div class="flex flex-col">
             <div class="flex gap-3">
               <h3>{{ task.title }}</h3>
@@ -117,7 +127,7 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
             <div class="text-gray-300 text-sm flex gap-3">
               <div class="">
                 Staff Assigned: <span class="text-gray-500">{{ task.assignedTo.firstName }} {{ task.assignedTo.lastName
-                  }}</span>
+                }}</span>
               </div>
               |
               <div class="">
@@ -126,7 +136,8 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
             </div>
           </div>
           <router-link
-            :to="{ name: 'view-sprint-task', params: { id: sprint.pid, sprintId: sprint.id, taskId: task.id } }">
+            :to="{ name: 'view-sprint-task', params: { id: sprint.pid, sprintId: sprint.id, taskId: task.id } }"
+          >
             <el-button type="primary" size="large" plain bg text>
               View Details
             </el-button>
