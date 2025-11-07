@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/features/Auth/store/useAuthStore'
@@ -13,6 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const userstore = useAuthStore()
 
+const openNav = ref(false)
 const userRole = computed(() => userstore.user.role)
 
 function logUserOut() {
@@ -24,11 +25,18 @@ function logUserOut() {
     console.warn(e)
   }
 }
+
+watch(route, () => {
+  openNav.value = false
+}, { deep: true })
 </script>
 
 <template>
   <section class="h-screen flex bg-white overflow-hidden">
-    <nav class="w-[250px] h-screen bg-white p-5 flex flex-col justify-between">
+    <nav
+      class="hidden w-[250px] h-screen bg-white p-5 min-lg:flex flex-col justify-between"
+      :class="{ 'max-lg:fixed max-lg:top-0 max-lg:flex max-lg:left-0 max-lg:bottom-0 max-lg:bg-white max-lg:z-10 max-lg:shadow-lg': openNav }"
+    >
       <div class="">
         <div class="flex items-center justify-center pb-10">
           <Logo />
@@ -78,9 +86,22 @@ function logUserOut() {
       <header
         class="sticky top-0 z-[20] bg-white border-b border-primary-50 pb-5 mb-5 flex justify-between items-center"
       >
-        <h1 class="capitalize text-2xl font-semibold">
-          {{ route.meta.name }}
-        </h1>
+        <div class="flex items-center justify-center gap-5">
+          <svg
+            class="w-[24px] cursor-pointer transition-all ease-in-out min-lg:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            @click="openNav = !openNav"
+          >
+            <path v-show="!openNav" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+            <path
+              v-show="openNav"
+              d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+            />
+          </svg>
+
+          <h1 class="capitalize text-2xl font-semibold">
+            {{ route.meta.name }}
+          </h1>
+        </div>
         <div class="" />
       </header>
       <div class="h-[90vh] overflow-hidden">
