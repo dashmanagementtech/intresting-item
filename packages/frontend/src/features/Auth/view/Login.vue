@@ -53,7 +53,7 @@ async function submitAuth(formEl: FormInstance | undefined) {
 </script>
 
 <template>
-  <section class="h-auto w-1/4 shadow rounded bg-white/90 p-5">
+  <section class="h-auto w-2/3 min-lg:w-1/4 shadow rounded bg-white/90 p-5">
     <div class="flex flex-col gap-3 items-center justify-center py-5">
       <AppLogo />
       <h1 class="text-2xl font-semibold text-primary capitalize">

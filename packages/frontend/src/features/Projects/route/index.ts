@@ -48,6 +48,9 @@ const projectRoutes: RouteRecordRaw[] = [
             path: 'add-task',
             name: 'add-task',
             component: () => import('../view/AddTask.vue'),
+            meta: {
+              acl: ['ADMIN', 'SUPER_ADMIN'],
+            },
           },
           {
             path: 'edit',

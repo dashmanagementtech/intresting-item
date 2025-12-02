@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type FormInstance, type FormRules } from 'element-plus'
+import type {FormInstance, FormRules} from 'element-plus';
 import { reactive, ref } from 'vue'
 // @ts-expect-error Type not declared
 import AppLogo from '@/shared/components/Logo.vue'
@@ -62,7 +62,7 @@ async function submit(formEl: FormInstance | undefined) {
 </script>
 
 <template>
-  <section class="h-auto w-1/4 shadow rounded bg-white/90 p-5">
+  <section class="h-auto w-2/3 min-lg:w-1/4 shadow rounded bg-white/90 p-5">
     <div class="flex flex-col gap-3 items-center justify-center pt-5 pb-1">
       <AppLogo />
       <h1 class="text-2xl font-semibold text-primary capitalize">
