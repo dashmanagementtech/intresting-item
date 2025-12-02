@@ -36,7 +36,7 @@ export class ProjectsService {
       const user = await getUserFromRequest(req);
       let projects: unknown[] = [];
       let count = 0;
-      if (user.role === 'ADMIN') {
+      if (user.role === 'SUPER_ADMIN') {
         const [allProjects, allCount] = await prisma.$transaction([
           prisma.projects.findMany({
             include: {
@@ -80,15 +80,22 @@ export class ProjectsService {
         const [allProjects, allCount] = await prisma.$transaction([
           prisma.projects.findMany({
             where: {
-              sprints: {
-                some: {
-                  tasks: {
+              OR: [
+                {
+                  sprints: {
                     some: {
-                      uid: user.id,
+                      tasks: {
+                        some: {
+                          uid: user.id,
+                        },
+                      },
                     },
                   },
                 },
-              },
+                {
+                  uid: user.id,
+                },
+              ],
             },
             include: {
               client: {
@@ -124,15 +131,22 @@ export class ProjectsService {
           }),
           prisma.projects.count({
             where: {
-              sprints: {
-                some: {
-                  tasks: {
+              OR: [
+                {
+                  sprints: {
                     some: {
-                      uid: user.id,
+                      tasks: {
+                        some: {
+                          uid: user.id,
+                        },
+                      },
                     },
                   },
                 },
-              },
+                {
+                  uid: user.id,
+                },
+              ],
             },
           }),
         ]);
