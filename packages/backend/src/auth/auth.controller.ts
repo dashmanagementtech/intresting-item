@@ -18,11 +18,11 @@ export class AuthController {
   @Public()
   @Post('/check-email')
   checkEmail(@Body() email: string) {
-    return this.authService.checkEmail(email)
+    return this.authService.checkEmail(email);
   }
 
   @Post('/set-password')
   setPassword(@Body() data: AuthLoginDto) {
-    return this.authService.setPassword(data)
+    return this.authService.setPassword(data);
   }
 }
