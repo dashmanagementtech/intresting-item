@@ -7,7 +7,7 @@ export class CronController {
   constructor(private readonly cronService: CronService) {}
 
   @Public()
-  @Get()
+  @Get('/weekly-reports')
   sendAll() {
     return this.cronService.sendAllReportToClient();
   }
