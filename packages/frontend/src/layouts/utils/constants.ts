@@ -12,13 +12,13 @@ export const ROUTES: IRoutes[] = [
     uri: '/app/dashboard',
     title: 'Dashboard',
     icon: DashboardIcon,
-    acl: ['ADMIN', 'USER']
+    acl: ['ADMIN', 'USER', 'SUPER_ADMIN']
   },
   {
     uri: '/app/projects',
     title: 'Projects',
     icon: ProjectIcon,
-    acl: ['ADMIN', 'USER']
+    acl: ['ADMIN', 'USER', 'SUPER_ADMIN']
   },
   {
     uri: '/app/staff',
@@ -37,7 +37,7 @@ export const ROUTES: IRoutes[] = [
     title: 'Resources',
     icon: ResourcesIcon,
     external: true,
-    acl: ['ADMIN', 'USER']
+    acl: ['ADMIN', 'USER', 'SUPER_ADMIN']
   },
 ]
 
@@ -46,6 +46,6 @@ export const COMMON: IRoutes[] = [
     uri: '/settings',
     title: 'Settings',
     icon: SettingIcon,
-    acl: ['ADMIN', 'USER']
+    acl: ['ADMIN', 'USER', 'SUPER_ADMIN']
   },
 ]
