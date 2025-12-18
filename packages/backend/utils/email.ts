@@ -936,3 +936,163 @@ export function sprintEndedEmailBuilder({
 </html>
   `;
 }
+
+export function clientReportEmailBuilder({
+  client,
+  sprint,
+}: {
+  client: { name: string };
+  sprint: { progress: number; goal: string; projectName: string };
+}) {
+  return `
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="preload" as="image" href="https://res.cloudinary.com/domingo-bucket/image/upload/v1760946203/monitora/b669024f-74c5-47e7-8b93-e44992d78f42.png" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta
+      name="format-detection"
+      content="telephone=no,address=no,email=no,date=no,url=no" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        mso-font-alt: 'sans-serif';
+        src: url(https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.19) format('woff2');
+      }
+
+      * {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+    <style>
+      blockquote,h1,h2,h3,img,li,ol,p,ul{margin-top:0;margin-bottom:0}@media only screen and (max-width:425px){.tab-row-full{width:100%!important}.tab-col-full{display:block!important;width:100%!important}.tab-pad{padding:0!important}}
+    </style>
+  </head>
+  <body style="background-color:#ffffff">
+    <!--$-->
+    <table
+      border="0"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+      align="center">
+      <tbody>
+        <tr>
+          <td
+            style="margin:0px;background-color:#ffffff;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px">
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="max-width:600px;width:100%;margin-left:auto;margin-right:auto;border-style:solid;background-color:#ffffff;min-width:300px;padding-top:8px;padding-right:8px;padding-bottom:8px;padding-left:8px;border-radius:0px;border-width:0px;border-color:transparent">
+              <tbody>
+                <tr style="width:100%">
+                  <td>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="margin-top:0px;margin-bottom:0px">
+                      <tbody style="width:100%">
+                        <tr style="width:100%">
+                          <td align="left" data-id="__react-email-column">
+                            <img src="https://res.cloudinary.com/domingo-bucket/image/upload/v1760946203/monitora/b669024f-74c5-47e7-8b93-e44992d78f42.png" alt="Monitora Logo" width="40" height="48" style="vertical-align: middle; margin-right: 4px;">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="max-width:37.5em;height:64px">
+                      <tbody>
+                        <tr style="width:100%">
+                          <td></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h2
+                      style="margin-left:0px;margin-right:0px;margin-top:0px;margin-bottom:12px;text-align:left;color:#111827;font-size:30px;line-height:36px;font-weight:700">
+                      <strong>Weekly project report</strong>
+                    </h2>
+                    <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                      Hello ${client.name}, please find below your weekly report
+                      for your projects on Monitora.
+                    </p>
+                    <hr
+                      style="width:100%;border:none;border-top:1px solid #eaeaea;margin-top:32px;margin-bottom:32px" />
+                    <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                      Project Name: ${sprint.projectName}
+                    </p>
+                      <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                      Current Sprint goal: ${sprint.goal}
+                    </p>
+                    <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                      Current Sprint progress:
+                    </p>
+                    <table
+                      align="left"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation">
+                      <tbody>
+                        <tr style="width:100%">
+                          <td style="width:100%">
+                            <div
+                              style="padding: 1px; background-color: #ededed;border-radius: 30px; overflow: hidden;">
+                              <div
+                                style="width: ${sprint.progress}%; background-color: #69131b; padding: 5px 0px;"></div>
+                            </div>
+                            <b>${sprint.progress}%</b>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <hr
+                      style="width:100%;border:none;border-top:1px solid #eaeaea;margin-top:32px;margin-bottom:32px" />
+                    <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                    </p>
+                    <p
+                      style="font-size:15px;line-height:26.25px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#374151;margin:0 0 20px 0;margin-top:0;margin-right:0;margin-bottom:20px;margin-left:0">
+                      Regards,<br />The Monitora Team
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!--7--><!--/$-->
+  </body>
+</html>
+
+  `;
+}
