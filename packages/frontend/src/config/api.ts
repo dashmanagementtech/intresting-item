@@ -4,14 +4,13 @@ import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 
 export function createApiConfig(baseURL: string, { withAuth = true, customHeaders = {} } = {}) {
-  const store = useAppStore()
-
   const getHeaders = () => {
     const baseHeaders: any = {
       ...customHeaders,
     }
 
     if (withAuth) {
+      const store = useAppStore()
       baseHeaders['Content-Type'] = 'application/json'
       baseHeaders.Authorization = `Bearer ${store.token}`
     }

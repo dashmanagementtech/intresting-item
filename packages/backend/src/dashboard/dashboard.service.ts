@@ -1,26 +1,74 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
+import { DashboardProject } from '@dash/shared';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { prisma } from 'config/prisma';
+import { getUserFromRequest } from 'utils/helpers';
 
 @Injectable()
 export class DashboardService {
-  create(createDashboardDto: CreateDashboardDto) {
-    return 'This action adds a new dashboard';
-  }
+  async findAll(req: any): Promise<{ data: DashboardProject[] }> {
+    try {
+      const user = await getUserFromRequest(req);
+      let tasks: unknown[] = [];
 
-  findAll() {
-    return `This action returns all dashboard`;
-  }
+      switch (user.role) {
+        case 'ADMIN':
+          tasks = await prisma.tasks.findMany({
+            include: {
+              sprint: {
+                include: {
+                  project: {
+                    select: {
+                      title: true,
+                    },
+                  },
+                },
+              },
+            },
+            where: {
+              NOT: {
+                status: 'DONE',
+              },
+            },
+          });
+          break;
 
-  findOne(id: number) {
-    return `This action returns a #${id} dashboard`;
-  }
+        default:
+          tasks = await prisma.tasks.findMany({
+            where: {
+              uid: user.id,
+              NOT: {
+                status: 'DONE',
+              },
+            },
+            include: {
+              sprint: {
+                include: {
+                  project: {
+                    select: {
+                      title: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+          break;
+      }
 
-  update(id: number, updateDashboardDto: UpdateDashboardDto) {
-    return `This action updates a #${id} dashboard`;
-  }
+      const dashboard: Record<string, DashboardProject[]> = {};
 
-  remove(id: number) {
-    return `This action removes a #${id} dashboard`;
+      tasks.forEach((task: any) => {
+        dashboard[task.sprint.pid] = {
+          id: task.sprint.pid,
+          title: task.sprint.project.title,
+          tasks: [...(dashboard[task.sprint.pid]?.tasks || []), task],
+        };
+      });
+
+      return { data: Object.values(dashboard).flat() };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException({ error });
+    }
   }
 }

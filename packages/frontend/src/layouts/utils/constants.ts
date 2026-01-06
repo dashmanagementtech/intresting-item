@@ -31,7 +31,10 @@ export const ROUTES: IRoutes[] = [
     title: 'Clients',
     icon: ClientIcon,
     acl: ['ADMIN', 'SUPER_ADMIN']
-  },
+  }
+]
+
+export const COMMON: IRoutes[] = [
   {
     uri: '//dashtechmanagement.com/blog',
     title: 'Resources',
@@ -39,9 +42,6 @@ export const ROUTES: IRoutes[] = [
     external: true,
     acl: ['ADMIN', 'USER', 'SUPER_ADMIN']
   },
-]
-
-export const COMMON: IRoutes[] = [
   {
     uri: '/settings',
     title: 'Settings',
