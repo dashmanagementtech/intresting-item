@@ -34,7 +34,7 @@ watch(route, () => {
 <template>
   <section class="h-screen flex bg-white overflow-hidden">
     <nav
-      class="hidden w-[250px] h-screen bg-white p-5 min-lg:flex flex-col justify-between"
+      class="hidden w-[350px] h-screen bg-white p-5 min-lg:flex flex-col justify-between"
       :class="{ 'max-lg:fixed max-lg:top-0 max-lg:flex max-lg:left-0 max-lg:bottom-0 max-lg:bg-white max-lg:z-10 max-lg:shadow-lg': openNav }"
     >
       <div class="">
@@ -47,7 +47,7 @@ watch(route, () => {
               <router-link
                 v-if="!link.external" :to="link.uri"
                 class="flex items-center gap-3 p-3 rounded hover:text-primary"
-                :class="{ 'bg-primary-50 text-primary font-semibold': route.meta.parent === link.uri }"
+                :class="{ 'bg-primary text-white hover:text-white font-semibold': route.meta.parent === link.uri }"
               >
                 <component :is="link.icon" class="w-[24px]" />
                 {{ link.title }}
@@ -66,7 +66,7 @@ watch(route, () => {
           <router-link
             v-for="(link, key) in COMMON" :key :to="link.uri"
             class="flex items-center gap-3 p-3 rounded hover:text-primary"
-            :class="{ 'bg-primary-50 text-primary font-semibold': route.meta.parent === link.uri }"
+            :class="{ 'bg-primary text-white font-semibold': route.meta.parent === link.uri }"
           >
             <component :is="link.icon" class="w-[24px]" />
             {{ link.title }}
@@ -82,7 +82,7 @@ watch(route, () => {
         </div>
       </div>
     </nav>
-    <section class="h-screen w-full bg-white border-l border-primary-50 p-5 overflow-hidden">
+    <section class="h-screen w-full bg-white p-5 overflow-hidden">
       <header
         class="sticky top-0 z-[20] bg-white border-b border-primary-50 pb-5 mb-5 flex justify-between items-center"
       >
