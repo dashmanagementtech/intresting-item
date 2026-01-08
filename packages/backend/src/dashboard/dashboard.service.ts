@@ -24,11 +24,6 @@ export class DashboardService {
                 },
               },
             },
-            where: {
-              NOT: {
-                status: 'DONE',
-              },
-            },
           });
           break;
 
@@ -37,7 +32,9 @@ export class DashboardService {
             where: {
               uid: user.id,
               NOT: {
-                status: 'DONE',
+                sprint: {
+                  started: false,
+                }
               },
             },
             include: {
@@ -55,17 +52,19 @@ export class DashboardService {
           break;
       }
 
-      const dashboard: Record<string, DashboardProject[]> = {};
+      const dashboard: Record<string, DashboardProject> = {};
 
       tasks.forEach((task: any) => {
         dashboard[task.sprint.pid] = {
           id: task.sprint.pid,
           title: task.sprint.project.title,
-          tasks: [...(dashboard[task.sprint.pid]?.tasks || []), task],
+          tasks: [...(dashboard[task.sprint.pid]?.tasks || []), task.status === 'DONE' ? null : task].filter((item) => item !== null),
         };
       });
 
-      return { data: Object.values(dashboard).flat() };
+      return {
+        data: Object.values(dashboard) as unknown as DashboardProject[],
+      };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException({ error });

@@ -41,12 +41,12 @@ const rules = reactive<FormRules<typeof form>>({
   }]
 })
 
-const handleCheckAllChange = (val: CheckboxValueType) => {
+function handleCheckAllChange (val: CheckboxValueType) {
   form.value.tasks = val ? sprint.value.tasks.map((task: any) => task.id) : []
   isIndeterminate.value = false
 }
 
-const handleCheckedTasksChange = (value: CheckboxValueType[]) => {
+function handleCheckedTasksChange (value: CheckboxValueType[]) {
   const checkedCount = value.length
   checkAll.value = checkedCount === sprint.value.tasks.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < sprint.value.tasks.length

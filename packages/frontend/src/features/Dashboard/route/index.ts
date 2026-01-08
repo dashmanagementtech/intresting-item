@@ -10,7 +10,14 @@ const dashboardRoutes: RouteRecordRaw[] = [
       parent: '/app/dashboard',
       name: 'dashboard',
       protected: true
-    }
+    },
+    children: [
+      {
+        path: 'invite-staff',
+        name: 'dashboard-invite-staff',
+        component: () => import('@/features/Staff/view/InviteStaff.vue')
+      }
+    ]
   },
 ]
 

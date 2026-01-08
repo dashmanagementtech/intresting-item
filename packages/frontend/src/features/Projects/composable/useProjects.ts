@@ -1,6 +1,7 @@
 import { ElMessage } from 'element-plus'
 import { reactive, ref } from 'vue'
 import { createApiConfig } from '@/config/api'
+import { useAppStore } from '@/stores/app'
 
 const baseUrl = import.meta.env.VITE_BASE_URL
 
@@ -18,6 +19,7 @@ const meta = reactive({
 })
 
 export function useProject() {
+  const appstore = useAppStore()
   const keyword = ref('')
 
   const addStaffToProject = async (pid: string, staff: Record<string, string>, silent: boolean = false) => {
@@ -55,6 +57,19 @@ export function useProject() {
     }
   }
 
+  const fetchProjectById = async (id: string) => {
+    try {
+      if (project.value?.id !== id) {
+        project.value = undefined
+      }
+      const { project: _project } = await api.get(`/${id}`)
+
+      project.value = _project
+    } catch (error: any | { message: string }) {
+      ElMessage.error(error.message)
+    }
+  }
+
   const createProject = async (payload: Record<string, any>) => {
     submitting.value = true
 
@@ -72,6 +87,7 @@ export function useProject() {
       }
 
       await fetchAllProjects()
+      appstore.setReload(true)
       ElMessage.success(message ?? 'Project created')
     }
     catch (error: any | { message: string }) {
@@ -79,6 +95,37 @@ export function useProject() {
     }
     finally {
       submitting.value = false
+    }
+  }
+
+  const updateProject = async (payload: Record<string, any>) => {
+    submitting.value = true
+
+    try {
+      const { id, ...rest } = payload
+
+      const { message } = await api.put(`/${id}`, rest)
+
+      ElMessage.success(message ?? 'Project updated')
+      await fetchProjectById(id)
+      appstore.setReload(true)
+    } catch (error: any | { message: string }) {
+      ElMessage.error(error.message);
+    } finally {
+      submitting.value = false
+    }
+  }
+
+  const deleteProject = async (id: string) => {
+    try {
+      const { message } = await api.delete(`/${id}`)
+
+      ElMessage.success(message)
+      appstore.setReload(true)
+      await fetchAllProjects()
+    } catch (error: any | { message: string }) {
+      console.error(error)
+      ElMessage.error(error.message ?? 'An error occurred, please try again.');
     }
   }
 
@@ -104,17 +151,6 @@ export function useProject() {
     }
   }
 
-  const fetchProjectById = async (id: string) => {
-    try {
-      project.value = undefined
-      const { project: _project } = await api.get(`/${id}`)
-
-      project.value = _project
-    } catch (error: any | { message: string }) {
-      ElMessage.error(error.message)
-    }
-  }
-
   return {
     loading,
     submitting,
@@ -125,9 +161,11 @@ export function useProject() {
     meta,
     createProject,
     fetchAllProjects,
+    fetchProjectById,
+    updateProject,
+    deleteProject,
     searchProjectByKeyword,
     addStaffToProject,
-    fetchProjectById,
     findDocumentsByProjectId,
     addDocumentToProject
   }
