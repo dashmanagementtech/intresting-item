@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DashboardProject } from '@dash/shared'
 import type { Reactive } from 'vue'
+import { Plus } from '@element-plus/icons-vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 import { useRoute, useRouter } from 'vue-router'
@@ -148,7 +149,9 @@ useClickOutside(navRef, () => {
                 <router-link :to="{ name: 'projects' }" class="bg-red-500 text-white px-2 py-1 rounded ">
                   See all projects
                 </router-link>
-                <button @click="getActiveProjects()" class="text-gray-500 cursor-pointer">Reload</button>
+                <button class="text-gray-500 cursor-pointer" @click="getActiveProjects()">
+                  Reload
+                </button>
               </div>
             </div>
             <div v-else-if="activeProjects.projects.length === 0" class="bg-orange-100 rounded p-3 text-sm flex flex-col items-start gap-2">
@@ -159,7 +162,7 @@ useClickOutside(navRef, () => {
                 All projects you have been assigned to that are active will be displayed here for you to access easily.
               </p>
             </div>
-            <el-scrollbar v-else class="!h-[28vh] overflow-y-scroll">
+            <el-scrollbar v-else class="!max-h-[28vh] overflow-y-scroll">
               <div class="flex flex-col gap-2">
                 <router-link
                   v-for="project in activeProjects.projects" :key="project.id"
@@ -180,6 +183,13 @@ useClickOutside(navRef, () => {
                 </router-link>
               </div>
             </el-scrollbar>
+
+            <router-link :to="{ name: 'new-project' }" class="p-3 rounded bg-gray-50/50 text-gray-300 flex gap-3 items-center text-sm mt-2">
+              <el-icon>
+                <Plus />
+              </el-icon>
+              Create Project
+            </router-link>
           </div>
         </div>
         <div class="mb-10">

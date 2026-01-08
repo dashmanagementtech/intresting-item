@@ -17,7 +17,7 @@ const { project } = useproject
 const { format } = useDate()
 
 const loading = ref(false)
-const tab = ref<'details' | 'doc' | 'sprint'>('details')
+const tab = ref<'details' | 'doc' | 'sprint'>('sprint')
 
 const isSide = route.meta.side
 
