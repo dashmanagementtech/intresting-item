@@ -26,14 +26,13 @@ async function getProjects() {
 }
 
 function deleteProject(id: string) {
-  ElMessageBox.alert('Deleting this project will also delete all the sprints and tasks attached to it.', `Delete "${projects.value!.find((project) => project.id === id).title}"`, {
+  ElMessageBox.confirm('Deleting this project will also delete all the sprints and tasks attached to it.', `Delete "${projects.value!.find((project) => project.id === id).title}"`, {
     confirmButtonText: 'Yes, delete',
     cancelButtonText: 'No',
     showCancelButton: true,
     type: 'error',
-    callback: async () => {
+  }).then(async () => {
       await useproject.deleteProject(id)
-    }
   })
 }
 
@@ -123,7 +122,7 @@ onMounted(async () => {
           <el-table-column label="Action">
             <template #default="{ row }">
               <div class="flex gap-3">
-                <router-link :to="{ name: 'peek-project', params: { id: row.id } }">
+                <router-link :to="{ name: 'view-project', params: { id: row.id } }">
                   <el-icon color="#69131b">
                     <View />
                   </el-icon>
