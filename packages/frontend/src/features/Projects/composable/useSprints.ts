@@ -1,6 +1,7 @@
 import { ElMessage } from 'element-plus'
 import { reactive, ref } from 'vue'
 import { createApiConfig } from '@/config/api'
+import { useAppStore } from '@/stores/app'
 
 const baseUrl = import.meta.env.VITE_BASE_URL
 
@@ -13,6 +14,8 @@ const sprint = ref()
 const meta = reactive({})
 
 export function useSprint() {
+  const appstore = useAppStore()
+
   const fetchAllSprintsByProjectId = async (pid: string, silent = false) => {
     if (!silent) {
       loading.value = true
@@ -58,6 +61,7 @@ export function useSprint() {
 
       ElMessage.success(message)
       fetchAllSprintsByProjectId(task.pid, true)
+      appstore.setReload(true)
       return task
     }
     catch (error: any | { message: string }) {
@@ -82,6 +86,7 @@ export function useSprint() {
       const task = await api.patch(`/task/${id}/status`, data)
       await fetchAllSprintsByProjectId(task.task.sprint.pid)
 
+      appstore.setReload(true)
       return task
     }
     catch (error: any | { message: string }) {

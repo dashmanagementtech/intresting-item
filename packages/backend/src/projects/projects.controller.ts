@@ -11,11 +11,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
 import {
   AddProjectDocumentDto,
-  UpdateProjectDto,
+  AddStaffToProjectDto,
 } from './dto/update-project.dto';
+
+import { UpdateProjectDto, CreateProjectDto } from '@dash/shared';
+
 import { PaginationDto } from 'utils/pagination.dto';
 
 @Controller('projects')
@@ -52,6 +54,15 @@ export class ProjectsController {
     return this.projectsService.findOne(id);
   }
 
+  @Put(':id')
+  updateProject(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() project: UpdateProjectDto,
+  ) {
+    return this.projectsService.updateProject(req, id, project);
+  }
+
   @Get(':id/documents')
   findProjectDocuments(@Param('id') id: string) {
     return this.projectsService.findProjectDocuments(id);
@@ -67,13 +78,13 @@ export class ProjectsController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto[],
+    @Body() updateProjectDto: AddStaffToProjectDto[],
   ) {
     return this.projectsService.addStaffToProject(id, updateProjectDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.projectsService.deleteProject(req, id);
   }
 }

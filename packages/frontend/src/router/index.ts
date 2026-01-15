@@ -6,15 +6,40 @@ import { useAppStore } from '@/stores/app'
 
 const routeModules = import.meta.glob('@/features/**/route/index.ts', { eager: true })
 
-const routes = []
+const routes = [
+  // {
+  //   path: '/app/:subPaths(.*)*/invite',
+  //   name: 'universal-invite',
+  //   meta: {
+  //     protected: true
+  //   },
+  //   component: () => import('@/features/Staff/view/InviteStaff.vue')
+  // }
+]
 
 for (const path in routeModules) {
   const mod = routeModules[path] as any
-  if (Array.isArray(mod.default)) {
-    routes.push(...mod.default)
+  const config = mod.default
+  
+  const processRoute = (route: any) => {
+    // Only target routes that start with /app
+    if (route.path.startsWith('/app')) {
+      if (!route.children) route.children = []
+      
+      route.children.push({
+        path: 'invite', // This becomes /app/any-path/invite
+        name: `${route.meta.name || 'dynamic'}-invite`,
+        component: () => import('@/features/Staff/view/InviteStaff.vue')
+      })
+    }
   }
-  else if (mod.default) {
-    routes.push(mod.default)
+
+  if (Array.isArray(config)) {
+    config.forEach(processRoute)
+    routes.push(...config)
+  } else if (config) {
+    processRoute(config)
+    routes.push(config)
   }
 }
 

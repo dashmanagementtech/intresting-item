@@ -251,4 +251,6 @@ onMounted(async () => {
       </div>
     </el-scrollbar>
   </section>
+
+  <RouterView :key="$route.fullPath" />
 </template>

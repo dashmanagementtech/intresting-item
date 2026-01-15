@@ -94,7 +94,7 @@ model Sprints {
   uid       String
 
   tasks   Tasks[]
-  project Projects @relation(fields: [pid], references: [id])
+  project Projects @relation(fields: [pid], references: [id], onDelete: Cascade)
 }
 
 model Tasks {
@@ -115,7 +115,7 @@ model Tasks {
   assignedTo Users @relation("userTasks", fields: [uid], references: [id])
   watcher    Users @relation("userWatching", fields: [createdBy], references: [id])
 
-  sprint   Sprints    @relation(fields: [sid], references: [id])
+  sprint   Sprints    @relation(fields: [sid], references: [id], onDelete: Cascade)
   comments Comments[] @relation("comment")
 }
 
@@ -127,8 +127,8 @@ model Comments {
   tid  String
   text String @db.VarChar(5000)
 
-  user Users @relation("comment", fields: [uid], references: [id])
-  task Tasks @relation("comment", fields: [tid], references: [id])
+  user Users @relation("comment", fields: [uid], references: [id], onDelete: Cascade)
+  task Tasks @relation("comment", fields: [tid], references: [id], onDelete: Cascade)
 }
 
 model Projects_Users {
@@ -137,8 +137,8 @@ model Projects_Users {
   uid String
   pid String
 
-  user     Users    @relation(fields: [uid], references: [id])
-  project  Projects @relation(fields: [pid], references: [id])
+  user     Users    @relation(fields: [uid], references: [id], onDelete: Cascade)
+  project  Projects @relation(fields: [pid], references: [id], onDelete: Cascade)
   userRole String
 
   @@id([uid, pid])

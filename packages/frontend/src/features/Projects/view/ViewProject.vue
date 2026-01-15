@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Edit, View } from '@element-plus/icons-vue'
 import { isEmpty } from 'lodash'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useDate } from '@/shared/composables/useDate'
@@ -17,10 +17,11 @@ const { project } = useproject
 const { format } = useDate()
 
 const loading = ref(false)
-const tab = ref<'details' | 'doc' | 'sprint'>('details')
+const tab = ref<'details' | 'doc' | 'sprint'>('sprint')
 
 const isSide = route.meta.side
 
+const projectId = computed(() => route.params.id)
 const productManager = computed(() => {
   const pm = project.value.users.find(item => (item.userRole === 'Product Manager') || (item.userRole === 'Project Manager'))?.user
 
@@ -47,6 +48,10 @@ onMounted(() => {
   if (!isSide && ['details', 'doc', 'sprint'].includes((route.name as string).split('-')[1] as string)) {
     tab.value = (route.name as string).split('-')[1] as 'details' | 'doc' | 'sprint'
   }
+})
+
+watch(projectId, () => {
+  getProjectById()
 })
 </script>
 

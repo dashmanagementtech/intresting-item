@@ -65,10 +65,15 @@ export function useDashoard() {
     }
   }
 
+  const loadActiveProjects = async () => {
+    return api.get("/dashboard")
+  }
+
   return {
     loadTasksAnalytics,
     loadUpcomingTasks,
     loadTasks,
+    loadActiveProjects,
     upcoming: readonly(upcoming),
     tasksAnalytics: readonly(tasksAnalytics),
     tasks: readonly(tasks)

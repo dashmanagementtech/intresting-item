@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ArrowDown, ArrowUp, CircleClose, Edit, Loading, Setting, VideoPlay } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useDate } from '@/shared/composables/useDate'
@@ -32,6 +32,12 @@ async function handleCommand(action: 'start' | 'stop' | 'edit') {
       break
   }
 }
+
+onMounted(() => {
+  if (sprint.started) {
+    isOpened.value = true
+  }
+})
 </script>
 
 <template>

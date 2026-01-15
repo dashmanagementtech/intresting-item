@@ -2,8 +2,11 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import {
   AddProjectDocumentDto,
-  UpdateProjectDto,
+  AddStaffToProjectDto,
 } from './dto/update-project.dto';
+
+import { UpdateProject } from '@dash/shared';
+
 import { prisma } from 'config/prisma';
 import { getUserFromRequest } from 'utils/helpers';
 import { PaginationDto } from 'utils/pagination.dto';
@@ -192,7 +195,28 @@ export class ProjectsService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
-    return `This action returns a #${id} project`;
+  }
+
+  async deleteProject(req: any, id: string): Promise<{ message: string }> {
+    try {
+      const user = await getUserFromRequest(req)
+
+      if (['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+
+        await prisma.projects.delete({
+          where: {
+            id
+          }
+        })
+
+        return { message: 'Project deleted' }
+      }
+      
+      throw new Error('Unauthorized to delete project')
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException({ error });
+    }
   }
 
   async findProjectDocuments(id: string) {
@@ -230,7 +254,10 @@ export class ProjectsService {
     }
   }
 
-  async addStaffToProject(id: string, updateProjectDto: UpdateProjectDto[]) {
+  async addStaffToProject(
+    id: string,
+    updateProjectDto: AddStaffToProjectDto[],
+  ) {
     try {
       await prisma.projects_Users.createMany({
         data: updateProjectDto.map((item) => ({
@@ -430,7 +457,29 @@ export class ProjectsService {
     }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} project`;
+  async updateProject(
+    req: any,
+    id: string,
+    project: UpdateProject,
+  ): Promise<{ message: string }> {
+    try {
+      const user = await getUserFromRequest(req);
+
+      if (!['USER', 'CLIENT'].includes(user.role)) {
+        await prisma.projects.update({
+          data: project,
+          where: {
+            id,
+          },
+        });
+      } else {
+        throw new Error('You do not have permission to do this');
+      }
+
+      return { message: 'project updated' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException({ error });
+    }
   }
 }

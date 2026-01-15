@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ArrowLeftBold, Edit, Search, View } from '@element-plus/icons-vue'
+import { ArrowLeftBold, Edit, Search, View, Delete } from '@element-plus/icons-vue'
 import { debounce } from 'lodash'
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDate } from '@/shared/composables/useDate'
 
 import { useProject } from '../composable/useProjects'
+import { ElMessageBox } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +23,17 @@ const isSidePage = computed(() => {
 
 async function getProjects() {
   await useproject.fetchAllProjects()
+}
+
+function deleteProject(id: string) {
+  ElMessageBox.confirm('Deleting this project will also delete all the sprints and tasks attached to it.', `Delete "${projects.value!.find((project) => project.id === id).title}"`, {
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'No',
+    showCancelButton: true,
+    type: 'error',
+  }).then(async () => {
+      await useproject.deleteProject(id)
+  })
 }
 
 watch(keyword, () => {
@@ -68,13 +80,8 @@ onMounted(async () => {
           stripe
           :data="projects"
         >
-          <el-table-column prop="id" label="Date Added" width="150" show-overflow-tooltip>
-            <template #default="{ row }">
-              {{ format(row.createdAt, 'do MMM, yyy') }}
-            </template>
-          </el-table-column>
 
-          <el-table-column prop="title" label="Name" width="200">
+          <el-table-column prop="title" label="Name" width="250">
             <template #default="{ row }">
               {{ row.title }}
             </template>
@@ -115,7 +122,7 @@ onMounted(async () => {
           <el-table-column label="Action">
             <template #default="{ row }">
               <div class="flex gap-3">
-                <router-link :to="{ name: 'peek-project', params: { id: row.id } }">
+                <router-link :to="{ name: 'view-project', params: { id: row.id } }">
                   <el-icon color="#69131b">
                     <View />
                   </el-icon>
@@ -126,6 +133,12 @@ onMounted(async () => {
                     <Edit />
                   </el-icon>
                 </router-link>
+
+                <button class="cursor-pointer" @click="deleteProject(row.id)">
+                  <el-icon color="red">
+                    <Delete />
+                  </el-icon>
+                </button>
               </div>
             </template>
           </el-table-column>
