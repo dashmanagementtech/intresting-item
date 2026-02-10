@@ -48,10 +48,12 @@ export class CronService {
 
     const sprintAndTasks = await Promise.all(
       clientsAndCurrentSprint.map(async (item) => {
-        if (item.sprint.sprint) {
+        const { sprint } = item;
+
+        if (sprint && sprint.sprint) {
           const tasks = await prisma.tasks.findMany({
             where: {
-              sid: item.sprint.sprint.id,
+              sid: sprint.sprint.id,
             },
           });
 
@@ -81,7 +83,7 @@ export class CronService {
               progress:
                 item.tasks.filter((task) => task.status === 'DONE').length /
                 item.tasks.length,
-              goal: item.sprint.goals,
+              goal: item.sprint.goals ?? '',
               projectName: item.sprint.projectName,
             },
           }),
