@@ -76,7 +76,13 @@ export class CronService {
       validItems.map((item) => {
         return sendEmail({
           subject: 'Weekly project report',
-          to: [{ name: item.client.name, email: item.client.email }],
+          to: [
+            { name: item.client.name, email: item.client.email },
+            {
+              name: 'Damilola Shopade',
+              email: 'pheyidamilola@gmail.com',
+            },
+          ],
           html: clientReportEmailBuilder({
             client: item.client,
             sprint: {
