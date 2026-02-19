@@ -8,7 +8,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 
 import { useRoute, useRouter } from 'vue-router'
 import Modal from '@/shared/components/Modal.vue'
-import { PROJECT_TYPES } from '@/shared/utils/constants'
+import { PROJECT_TYPES, STATUS } from '@/shared/utils/constants'
 import { validateRequiredField } from '@/shared/utils/helpers'
 import { useProject } from '../composable/useProjects'
 
@@ -88,11 +88,15 @@ onMounted(async () => {
   <Modal heading="Update Project" size="" @close="$router.push({ name: 'view-project', params: { id: $route.params.id } })">
     <el-form ref="formRef" v-loading="loading" :model="project" label-position="top" size="large" :rules>
       <el-scrollbar v-if="!isEmpty(project)" class="!h-[40vh] overflow-y-auto">
-        <div class="grid md:grid-cols-3 md:gap-3">
-          <el-form-item class="md:col-span-2" prop="title" label="Project Name">
-            <el-input v-model="project.title" type="text" placeholder="Rocky plains" />
+        <el-form-item class="md:col-span-2" prop="title" label="Project Name">
+          <el-input v-model="project.title" type="text" placeholder="Rocky plains" />
+        </el-form-item>
+        <div class="grid md:grid-cols-2 md:gap-3">
+          <el-form-item class="md:col-span-1" prop="type" label="Project Type">
+            <el-select v-model="project.status" placeholder="Select project">
+              <el-option v-for="type in STATUS.filter((s) => s.scope.includes('project'))" :key="type.label" :value="type.value" :label="type.label" />
+            </el-select>
           </el-form-item>
-
           <el-form-item class="md:col-span-1" prop="type" label="Project Type">
             <el-select v-model="project.type" placeholder="Select project">
               <el-option v-for="type in PROJECT_TYPES" :key="type.label" :value="type.value" :label="type.label" />

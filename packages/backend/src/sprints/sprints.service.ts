@@ -63,7 +63,7 @@ export class SprintsService {
           },
         },
         orderBy: {
-          startDate: 'asc',
+          started: 'desc',
         },
       });
 

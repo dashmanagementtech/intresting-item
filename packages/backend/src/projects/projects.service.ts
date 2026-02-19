@@ -211,7 +211,7 @@ export class ProjectsService {
 
         return { message: 'Project deleted' }
       }
-      
+
       throw new Error('Unauthorized to delete project')
     } catch (error) {
       console.error(error);
@@ -367,7 +367,6 @@ export class ProjectsService {
           orderBy: {
             dueDate: 'asc',
           },
-          take: 3,
         });
       } else {
         deadlines = await prisma.tasks.findMany({
@@ -395,7 +394,6 @@ export class ProjectsService {
           orderBy: {
             dueDate: 'asc',
           },
-          take: 3,
         });
       }
 
@@ -425,7 +423,9 @@ export class ProjectsService {
           },
           where: {
             NOT: {
-              status: 'DONE',
+              status: {
+                in: ['DONE', 'READY_TO_TEST', 'TESTING'],
+              },
             },
           },
         });
@@ -434,7 +434,9 @@ export class ProjectsService {
           where: {
             uid: user.id,
             NOT: {
-              status: 'DONE',
+              status: {
+                in: ['DONE', 'READY_TO_TEST', 'TESTING'],
+              },
             },
           },
           include: {

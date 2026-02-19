@@ -9,6 +9,7 @@ export interface UpdateProject {
   endDate?: Date
   cuid?: string
   type?: string
+  status?: string
 }
 
 export class CreateProjectDto {
@@ -57,4 +58,8 @@ export class UpdateProjectDto {
   @IsString()
   @IsOptional()
   type!: string;
+
+  @IsString()
+  @IsOptional()
+  status!: string
 }
